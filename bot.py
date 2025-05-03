@@ -1,53 +1,44 @@
-import logging
-import re
 import os
-from telegram import Update, ChatMember
+import re
+import logging
+from telegram import Update
 from telegram.ext import (
     ApplicationBuilder,
-    ContextTypes,
-    MessageHandler,
     CommandHandler,
+    MessageHandler,
+    ContextTypes,
     filters,
 )
 
-# Logging for debugging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# ✨ Start command message
-START_QUOTE = "“Work hard in silence, let your success make the noise.” 🚀"
+QUOTE = "“Work hard in silence, let your success make the noise.” 🚀"
+PATTERN = re.compile(r'(@\w+|https?://\S+)', re.IGNORECASE)
 
-# Username and link pattern
-USERNAME_OR_LINK = re.compile(r'(@\w+|https?://\S+)', re.IGNORECASE)
-
-# /start command
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(START_QUOTE)
+    await update.message.reply_text(QUOTE)
 
-# Message monitor and delete
-async def filter_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def delete_links(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message = update.message
-    if message and message.chat.type in ['group', 'supergroup']:
-        text = message.text or ""
-        if USERNAME_OR_LINK.search(text):
-            try:
-                await message.delete()
-                logger.info(f"Deleted message in {message.chat.title}: {text}")
-            except Exception as e:
-                logger.warning(f"Failed to delete message: {e}")
+    if message.chat.type in ['group', 'supergroup'] and PATTERN.search(message.text or ""):
+        try:
+            await message.delete()
+            logger.info(f"Deleted message in {message.chat.title}")
+        except Exception as e:
+            logger.warning(f"Failed to delete message: {e}")
 
-# Main function to run bot
 async def main():
     TOKEN = os.getenv("BOT_TOKEN")
     if not TOKEN:
-        raise ValueError("BOT_TOKEN environment variable not set")
+        raise ValueError("BOT_TOKEN environment variable not set.")
 
     app = ApplicationBuilder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), filter_message))
+    app.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), delete_links))
 
-    logger.info("Bot started...")
+    logger.info("Bot is running...")
     await app.run_polling()
 
 if __name__ == "__main__":
