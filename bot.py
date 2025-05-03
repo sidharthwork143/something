@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 # Quote and pattern
 QUOTE = "“Work hard in silence, let your success make the noise.” 🚀"
-PATTERN = re.compile(r'(@\w+|https?://\S+|t\.me/\S+|facebook\.com/\S+|instagram\.com/\S+|youtube\.com/\S+|whatsapp\.com/\S+)', re.IGNORECASE)
+PATTERN = re.compile(r'(@\w+|https?://\S+|t\.me/\S+|facebook\.com/\S+|instagram\.com/\S+|youtube\.com/\S+|whatsapp\.com/\S+|www\.\S+)', re.IGNORECASE)
 
 # /start command
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
