@@ -10,24 +10,29 @@ from telegram.ext import (
     filters,
 )
 
+# Logging setup
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-QUOTE = "“Work hard in silence, let your success make the noise.” 🚀"
+# Message deletion pattern
 PATTERN = re.compile(r'(@\w+|https?://\S+)', re.IGNORECASE)
+QUOTE = "“Work hard in silence, let your success make the noise.” 🚀"
 
+# /start command
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(QUOTE)
 
+# Auto-delete links and usernames
 async def delete_links(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message = update.message
     if message.chat.type in ['group', 'supergroup'] and PATTERN.search(message.text or ""):
         try:
             await message.delete()
-            logger.info(f"Deleted message in {message.chat.title}")
+            logger.info(f"Deleted a message in {message.chat.title}")
         except Exception as e:
             logger.warning(f"Failed to delete message: {e}")
 
+# Bot main logic
 async def main():
     TOKEN = os.getenv("BOT_TOKEN")
     if not TOKEN:
@@ -41,6 +46,13 @@ async def main():
     logger.info("Bot is running...")
     await app.run_polling()
 
+# Async-safe launch for Koyeb & local
 if __name__ == "__main__":
     import asyncio
-    asyncio.run(main())
+
+    try:
+        asyncio.get_event_loop().run_until_complete(main())
+    except RuntimeError:
+        import nest_asyncio
+        nest_asyncio.apply()
+        asyncio.get_event_loop().run_until_complete(main())
