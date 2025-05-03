@@ -1,60 +1,55 @@
-
-import os
+import logging
 import re
-from telegram import Update, InputFile
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
+import os
+from telegram import Update, ChatMember
+from telegram.ext import (
+    ApplicationBuilder,
+    ContextTypes,
+    MessageHandler,
+    CommandHandler,
+    filters,
+)
 
-# Bot token from environment variable
-TOKEN = os.getenv("BOT_TOKEN")
+# Logging for debugging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-# Regex to detect @username or Telegram link
-USERNAME_PATTERN = re.compile(r'@\w+')
-LINK_PATTERN = re.compile(r'(https?://)?(www\.)?(t\.me|telegram\.me)/\w+')
+# ✨ Start command message
+START_QUOTE = "“Work hard in silence, let your success make the noise.” 🚀"
 
-# 📸 Motivational photo and quote
-PHOTO_PATH = "welcome.jpg"  # Make sure this file exists in your directory
-QUOTE = "✨ *Welcome!* ✨\n\n_“The journey of a thousand miles begins with a single step.”_"
+# Username and link pattern
+USERNAME_OR_LINK = re.compile(r'(@\w+|https?://\S+)', re.IGNORECASE)
 
-# Handle /start command
-async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    chat_id = update.effective_chat.id
-    try:
-        with open(PHOTO_PATH, 'rb') as photo:
-            await context.bot.send_photo(
-                chat_id=chat_id,
-                photo=photo,
-                caption=QUOTE,
-                parse_mode='Markdown'
-            )
-    except Exception as e:
-        print(f"Error sending start message: {e}")
+# /start command
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(START_QUOTE)
 
-# Filter messages in group
-async def filter_messages(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.message and update.message.text:
-        text = update.message.text
-        if USERNAME_PATTERN.search(text) or LINK_PATTERN.search(text):
+# Message monitor and delete
+async def filter_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message = update.message
+    if message and message.chat.type in ['group', 'supergroup']:
+        text = message.text or ""
+        if USERNAME_OR_LINK.search(text):
             try:
-                await context.bot.delete_message(
-                    chat_id=update.message.chat_id,
-                    message_id=update.message.message_id
-                )
-                print("🚫 Message deleted!")
+                await message.delete()
+                logger.info(f"Deleted message in {message.chat.title}: {text}")
             except Exception as e:
-                print(f"Error deleting message: {e}")
+                logger.warning(f"Failed to delete message: {e}")
 
-# Main function
+# Main function to run bot
 async def main():
+    TOKEN = os.getenv("BOT_TOKEN")
+    if not TOKEN:
+        raise ValueError("BOT_TOKEN environment variable not set")
+
     app = ApplicationBuilder().token(TOKEN).build()
 
-    # Add handlers
-    app.add_handler(CommandHandler("start", start_command))
-    app.add_handler(MessageHandler(filters.TEXT & filters.ChatType.GROUPS, filter_messages))
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), filter_message))
 
-    print("✅ Bot is running (Polling mode)...")
+    logger.info("Bot started...")
     await app.run_polling()
 
-# Entry point
 if __name__ == "__main__":
     import asyncio
     asyncio.run(main())
