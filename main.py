@@ -65,7 +65,7 @@ async def main():
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), delete_links))
 
-    logger.info("Bot is running...")
+    logger.info("Made By : FM - Bot is running...")
     await app.run_polling()
 
 # Entry point
