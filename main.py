@@ -26,7 +26,7 @@ QUOTE = "“Work hard in silence, let your success make the noise.” 🚀"
 
 # Pattern to detect links/usernames
 PATTERN = re.compile(
-    r'(@\w+|https?://\S+|t\.me/\S+|facebook\.com/\S+|instagram\.com/\S+|youtube\.com/\S+|whatsapp\.com/\S+|www\.\S+|bit\.ly)',
+    r'(@\w+|https?://\S+|t\.me/\S+|facebook\.com/\S+|instagram\.com/\S+|youtube\.com/\S+|whatsapp\.com/\S+|www\.\S+|bit\.ly/S+|cutt\.ly)',
     re.IGNORECASE
 )
 
