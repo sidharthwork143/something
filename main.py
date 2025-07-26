@@ -22,7 +22,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Quote for /start command
-QUOTE ="<b>⚡ Shield Activated! Messages with '@' or links vanish instantly | Crafted by:</b> @Sandmanbro | @Filmy_Men ✨"
+QUOTE ="⚡ Shield Activated! Messages with '@' or links vanish instantly | Crafted by : @Sandmanbro | @Filmy_Men ✨"
 
 
 
