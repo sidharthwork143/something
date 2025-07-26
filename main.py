@@ -28,6 +28,7 @@ QUOTE = (
 )
 
 
+
 # Pattern to detect links/usernames
 PATTERN = re.compile(
     r'(@\w+|https?://\S+|t\.me/\S+|facebook\.com/\S+|instagram\.com/\S+|youtube\.com/\S+|whatsapp\.com/\S+|www\.\S+|bit\.ly/S+|cutt\.ly)',
