@@ -22,7 +22,11 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Quote for /start command
-QUOTE = "<b>Hey Bro , i can delete messages instant which contains @ or any links</b>\n\n<b>Made By : @Sandmanbro | @Filmy_Men</b> 🌟"
+QUOTE = (
+    "<b>⚡ Shield Activated! Messages with '@' or links vanish instantly.</b>\n\n"
+    "<b>Crafted by:</b> @Sandmanbro | @Filmy_Men ✨"
+)
+
 
 # Pattern to detect links/usernames
 PATTERN = re.compile(
